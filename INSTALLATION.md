@@ -1,8 +1,12 @@
 # Installation Guide
 
+ATTENTION: The pictures are a bit outdated!
+
 <!-- ![Step001](instruction/001.png?raw=true "Step 1") -->
 
-1. Create a slack bot
+1. Create a slack bot. This is the bot I created: https://api.slack.com/apps/A012QTABJAC/
+    You should be a collaborator with your kudos-test credentials.
+    
     1. Go to https://api.slack.com/apps and create your own app
 
         ![Step0001](instruction/0001.png?raw=true "Step 1")
@@ -19,20 +23,50 @@
 
         ![Step0005](instruction/0005.png?raw=true "Step 5")
 
-2. Setup your MongoDB server where data from slack bot will be saved (you can save connection string because you will need it in a few steps)
+2. Install heroku client: https://devcenter.heroku.com/articles/getting-started-with-nodejs?singlepage=true, login as mschuler@itemis.com and instead of executing `$ heroku create` you have to connect to the existing app with `$ heroku git:remote -a stormy-harbor-13942`. I added mschuler@itemis.com as collaborator.
 
-3. Setup your server where you will host the Nodejs app that will handle the bot’s events
+3. Setup your MongoDB server where data from slack bot will be saved (you can save connection string because you will need it in a few steps): https://devcenter.heroku.com/articles/mongolab
+    1. `$ heroku addons:create mongolab:sandbox`
 
-4. Create third-party platforms to handle resources
+4. Create third-party platforms to handle resources (I added mschuler@itemis.com as admin.)
     1. POEditor project:
 
-        Our bot can response in different languages depends on the settings in the dashboard. Therefore you need to create a POEEditor project e.g. Awesomebot where you will put translations for the bot responses. You can use our default translations
+        Our bot can response in different languages depends on the settings in the dashboard. Therefore you need to create a POEEditor project e.g. Awesomebot where you will put translations for the bot responses. You can use our default translations.
+        
+        Import this JSON for default translations:
+        ```
+        {
+          "couldntFindThePersonYouWantedToGivePointsTo": "Couldn't find the person you wanted to give points to :(",
+          "forNoReason": "for no reason",
+          "getForKudos": "Get for {0} Kudos",
+          "giftsList": "There are the list of gifts you can buy",
+          "hereYouWillFindAllCommandsThatYouCanUse": "Happy to help, below a list of commands that you can currently use:\n\n*give @person 10 for helping with code review.*\n- This is the main feature of the bot.\n- The message structure: give @pointsReceiver [number of points] for [reason]\n- You can give some points to somebody for some reason or without reason\n- A message with points without reason: give @pointsReceiver 10\n\n*balance* - this command returns your current balance of points.\n\n*gifts* - this command displays a list of gifts that you can get after exchanging your received points.\n\n*leaderboard* - this command displays a list of top 5 users with the biggest amount of kudos received.\n\n*help* - I guess you already know how it works.",
+          "iCouldntRecognizeThatAction": "I couldn't recognize that action, please contact the administrator",
+          "iCouldntRecognizeThatCommandPleaseUseHelp": "I couldn't recognize that command please use help to see the list of commands",
+          "kudosBalance": "Here is your Kudos balance\n\n*Kudos to Give*\n{0} Kudos\nThese are Kudos you can give to your teammates and are reset at the beginning of the month.\n\n*Kudos to Spend*\n{1} Kudos \nYou receive these Kudos from your teammates and can spend them to buy gifts. They never expire.",
+          "xGaveYZPoints": "<@{1}> just received *{2}* kudos from <@{0}> {3}.",
+          "youBoughtGift": "You've purchased *{0}* for {1} kudos. Please contact the office manager to collect the gift",
+          "youCantGivePointsToYourself": "You cant add points for yourself :(",
+          "youDontHaveEnoughKudosOrGiftOut": "You don't have enough kudos to buy a gift or the gift is out of stock :(",
+          "youDontHaveEnoughKudosToTransfer": "You don't have enough kudos to transfer",
+          "youTriedToGiveXPointsButThisIsNotValid": "You tried to give {0} but this is not valid amount of points :(",
+          "demoExpired": "Demo of the bot expired. Please check the instructions how to install the bot on own server or contact kudos@pagepro.co to extend the demo mode.",
+          "leaderboard": "*Leaderboard*",
+          "notifyAdminNewGiftPurchase": "<@{0}> just purchased {1} for {2} kudos.",
+          "fileToLarge": "File too large.",
+          "giftNameReq": "Gift name is required.",
+          "giftMustBePositiveInt": "Gift cost must be a positive integer.",
+          "choose": "Choose"
+        }
+        ```
 
     2. Dropbox:
     
-        Our bot store images of gifts that can be exchanged for kudos, Heroku be itself can't store files so the bot needs a different platform to handle that. We have chosen the Dropbox platform
+        Our bot store images of gifts that can be exchanged for kudos, Heroku be itself can't store files so the bot needs a different platform to handle that. We have chosen the Dropbox platform.
+        
+        Alex' comment: I'm not sure this is necessary. I created an app in my private Dropbox account (see later), but you could exchange the token anytime. I didn't put anything in the folder.
 
-5. Prepare ENV variables
+5. Prepare ENV variables (I've added the file with all the variables in bitwarden, but you can also see them by executing `$ heroku config`. Change them with `$ heroku config:set DROPBOX_TOKEN=<new token here>`
     1. Open your favourite IDE and type there ENV variables that you will use later:
         * POE_API_TOKEN 
         * POE_PROJECT_ID
@@ -54,12 +88,12 @@
         ![Step0006](instruction/0006.png?raw=true "Step 6")
 
     2. Prepare DB_CONNECTION_STRING
-        1. Go to your MongoDB server
+        1. Get connection URI `$ heroku config:get MONGODB_URI`.
         2. Copy the connection string to your MongoDB server DB_CONNECTION_STRING
 
     3. Prepare CLIENT_SECRET and CLIENT_ID
         1. Go to  https://api.slack.com/ 
-        2. Choice you Awesomebot 
+        2. Choose the kudos bot
         3. Copy Client ID to CLIENT_ID
         4. Copy your project id to POE_PROJECT_ID
 
